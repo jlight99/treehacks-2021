@@ -1,13 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo, useRef } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 export default function Home(props) {
     const pagescreenApiUrl = 'https://api.pagescreen.io/v1/capture.json';
     const [url, setUrl] = useState('');
     const [contentPermalink, setContentPermalink] = useState('');
     const [contentReady, setContentReady] = useState(false);
+    const [socketUrl, setSocketUrl] = useState('ws://localhost/:8765');
+    const messageHistory = useRef([]);
+    
+    const {
+      sendMessage,
+      lastMessage,
+      readyState,
+    } = useWebSocket(socketUrl);
+
+    messageHistory.current = useMemo(() =>
+      messageHistory.current.concat(lastMessage),[lastMessage]);
+  
+    const handleClickChangeSocketUrl = useCallback(() =>
+      setSocketUrl('ws://localhost/:8765'), []);
+  
+    const handleClickSendMessage = useCallback(() =>
+      sendMessage('Hello'), []);
+  
+    const connectionStatus = {
+      [ReadyState.CONNECTING]: 'Connecting',
+      [ReadyState.OPEN]: 'Open',
+      [ReadyState.CLOSING]: 'Closing',
+      [ReadyState.CLOSED]: 'Closed',
+      [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
+    }[readyState];
 
     const handleUrlChange = event => {
         setUrl(event.target.value);
@@ -45,6 +71,21 @@ export default function Home(props) {
 
     return (
         <div style={{ margin: '3%' }}>
+            <div>
+                <button
+                    onClick={handleClickChangeSocketUrl}
+                >
+                    Click Me to change Socket Url
+                </button>
+                <button
+                    onClick={handleClickSendMessage}
+                    disabled={readyState !== ReadyState.OPEN}
+                >
+                    Click Me to send 'Hello'
+                </button>
+                <span>The WebSocket is currently {connectionStatus}</span>
+                {lastMessage ? <span>Last message: {lastMessage}</span> : null}
+            </div>
             <h3>Social Media Paradigm Shift</h3>
             <div>content discussion-based social media</div>
 
