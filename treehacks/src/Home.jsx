@@ -1,7 +1,8 @@
-import React, { useState, useCallback, useMemo, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
+import Comment from './Comment';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 export default function Home(props) {
@@ -34,6 +35,50 @@ export default function Home(props) {
       [ReadyState.CLOSED]: 'Closed',
       [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
     }[readyState];
+
+    const commentData = [
+        {
+            "id": 1,
+            "left": 300,
+            "top": 420,
+            "text": "cookie you're a footer",
+        },
+        {
+            "id": 2,
+            "left": 250,
+            "top": 225,
+            "text": "random guy on reddit",
+        },
+        {
+            "id": 3,
+            "left": 420,
+            "top": 380,
+            "text": "full stack 2nd coop by the way",
+        },
+    ];
+
+    const commentItems = commentData.map((data) =>
+        <Comment
+            key={data.id}
+            id={data.id}
+            left={data.left}
+            top={data.top}
+            text={data.text}
+        ></Comment>
+    );
+
+    const handleClick = e => {
+        console.log("clicked");
+        console.log(e);
+    };
+
+    useEffect(() => {
+        document.addEventListener("click", handleClick);
+    
+        return () => {
+          document.removeEventListener("click", handleClick);
+        };
+    });
 
     const handleUrlChange = event => {
         setUrl(event.target.value);
@@ -91,10 +136,11 @@ export default function Home(props) {
 
             {contentReady && contentPermalink &&  
                 <div>
-                    {/* <p>potato</p> */}
                     <img src={`${contentPermalink}?${Date.now()}`}></img>
                 </div>
             }
+
+            {commentItems}
 
             <Form onSubmit={handleSubmit}>
                 <Form.Group controlId='formBasicEmail'>
