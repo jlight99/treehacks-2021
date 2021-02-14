@@ -94,18 +94,18 @@ export default function Home(props) {
     )
     // If the thread is found!
     if (threadIdx != -1) {
-      let data = messageThreadData
+      let data = messageThreadData.concat();
       data[threadIdx].messages.push({
         user: user,
         timestamp: Date.now(),
         body: newMessage.body,
-      })
-      setMessageThreadData(data)
+      });
+      setMessageThreadData(data);
     } else if (newMessage.left && newMessage.top) {
       // If we are creating a new message
-      setMessageThreadData([...messageThreadData, newMessage])
+      setMessageThreadData(messageThreadData => [...messageThreadData, newMessage]);
     } else {
-      console.log('Invalid new message', newMessage)
+      console.log('Invalid new message', newMessage);
     }
   }
 
@@ -138,9 +138,9 @@ export default function Home(props) {
    * Send the comment data to the server in order to create a new comment.
    */
   const handleCommentSubmit = (event) => {
-    event.preventDefault()
-    const id = (+new Date()).toString(36)
-    const timestamp = Date.now()
+    event.preventDefault();
+    const id = (+new Date()).toString(36);
+    const timestamp = Date.now();
     const localMessage = {
       left: openCommentLeft,
       top: openCommentTop,
@@ -152,9 +152,9 @@ export default function Home(props) {
           body: openCommentText,
         },
       ],
-    }
-    addNewMessage(localMessage)
-    setDisplayOpenComment(false)
+    };
+    addNewMessage(localMessage);
+    setDisplayOpenComment(false);
     add_msg(socket, {
       user: user,
       body: openCommentText,
@@ -162,7 +162,8 @@ export default function Home(props) {
       x: openCommentLeft,
       y: openCommentTop,
       timestamp: +new Date(),
-    })
+    });
+    setOpenCommentText('');
   }
 
   /*

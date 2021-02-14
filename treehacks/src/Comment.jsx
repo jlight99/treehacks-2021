@@ -16,17 +16,18 @@ function Message(props) {
 }
 
 function ReplyForm(props) {
-  const [replyMessage, setReplyMessage] = useState('')
+  const [replyMessage, setReplyMessage] = useState('');
 
   const handleCommentTextChange = (e) => {
-    setReplyMessage(e.target.value)
+    setReplyMessage(e.target.value);
   }
   const handleKeyPress = (target) => {
     if (target.charCode == 13) {
+      setReplyMessage('');
       props.addNewMessage({
         message_thread_id: props.messageThreadId,
         body: replyMessage,
-      })
+      });
     }
   }
 
@@ -35,7 +36,7 @@ function ReplyForm(props) {
       <Form.Control
         type="text"
         placeholder="Reply"
-        // value={openCommentText}
+        value={replyMessage}
         onChange={handleCommentTextChange}
         onKeyPress={handleKeyPress}
         className="reply"
