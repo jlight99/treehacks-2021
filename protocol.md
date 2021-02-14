@@ -40,8 +40,8 @@
   body: '',
   message_thread_id: '',           // Generate a string of the current timestamp
   position?: {
-    x : ,
-    y : ,
+    x: ,
+    y: ,
   },
 }
 ```
@@ -50,10 +50,19 @@
 {
   image_url:
   position: {
-    x : ,
-    y : ,
-    width : ,
-    height : ,
+    x: ,
+    y: ,
+    width: ,
+    height: ,
   },
 }
 ```
+```
+// mouse position
+{
+  user: '',
+  position: {
+    x: ,
+    y: ,
+  }
+}
