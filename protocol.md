@@ -39,10 +39,9 @@
   user: '',
   body: '',
   message_thread_id: '',           // Generate a string of the current timestamp
-  position?: {
-    x: ,
-    y: ,
-  },
+  x: ,
+  y: ,
+  timestamp: '',
 }
 ```
 

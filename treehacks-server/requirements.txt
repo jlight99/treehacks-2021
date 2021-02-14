@@ -1,1 +1,5 @@
 websockets==8.1
+flask_socketio
+flask_cors
+google-cloud-firestore
+firebase-admin
