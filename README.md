@@ -19,6 +19,8 @@ And when you're done, have a library of shared content you and your friends coul
 We built a web app using React on the frontend, Python Flask on the backend, web sockets to communicate between the two, and Firestore for data storage.
 
 ## How to see it in action
+![screenshot](/public/convo.png)<br />
+
 ### run client
 ```
 npm install && npm start
