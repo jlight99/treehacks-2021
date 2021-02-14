@@ -131,19 +131,19 @@ export default function Home(props) {
     event.preventDefault()
     const id = (+new Date()).toString(36)
     const timestamp = Date.now()
-    console.log('sending comment to backend')
-    addNewMessage({
+    const localMessage = {
       left: openCommentLeft,
       top: openCommentTop,
       message_thread_id: id,
       messages: [
         {
-          user: 'Robbie',
-          timestamp: 1613281738,
+          user: user,
+          timestamp: timestamp,
           body: openCommentText,
         },
       ],
-    })
+    }
+    addNewMessage(localMessage)
     setDisplayOpenComment(false)
     add_msg(socket, {
       user: user,
@@ -199,18 +199,20 @@ export default function Home(props) {
   }
 
   const add_msg_cb = (msg) => {
-    console.log('Got new message from another user')
-    addNewMessage({
+    console.log('Got new message from another user', msg)
+    const newMessage = {
       left: msg['x'],
       top: msg['y'],
       message_thread_id: msg['message_thread_id'],
       messages: [
         {
           user: msg['user'],
+          timestamp: Date.now(),
           body: msg['body'],
         },
       ],
-    })
+    }
+    addNewMessage(newMessage)
   }
 
   const move_cursor_cb = (pos) => {

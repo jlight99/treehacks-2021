@@ -31,6 +31,7 @@ user_to_page: Dict[str, str] = {}
 thread_messages: Dict[str, List[dict]] = defaultdict(list)
 page_threads: Dict[str, List[str]] = defaultdict(list)
 mouse_pos: Dict[str, Tuple[int, int]] = {}
+sids = set()
 
 ################################ HTML Rendering ################################
 # This method is only used to render the test webpage and can be diabled on your
@@ -54,8 +55,8 @@ def connected():
 @socketio.on('connect_to_doc')
 def handle_host_connect(msg):
     """ Registers client to doc """
-    print("RBZ", msg, request.sid)
     sid = request.sid
+    sids.add(sid)
     user_id = msg['user']
     page_url = msg['url']
     page_sids[page_url].add(sid)
@@ -85,15 +86,16 @@ def _add_msg_content(msg):
 
 @socketio.on('add_msg')
 def add_msg(msg):
-    print("!!!!!!!!!!!!!!!! RBZ")
     """ Add message to page """
     user_id = msg['user']
     page_url = user_to_page[user_id]
     print(f'{user_id} sent msg: {msg}')
     _add_msg_content(msg)
 
-    # Send party ID back to the all users connected to the doc
-    socketio.emit('add_msg', msg)
+    # Send party ID back to the all users connected to the doc except for sending user
+    for sid in sids:
+        if sid != request.sid:
+            socketio.emit('add_msg', msg, room=sid)
 
 @socketio.on('move_cursor')
 def move_cursor(msg):
@@ -102,8 +104,10 @@ def move_cursor(msg):
     page_url = user_to_page[user_id]
     mouse_pos[user_id] = (msg["x"], msg["y"])
 
-    # Send party ID back to the all users connected to the doc
-    socketio.emit('move_cursor', msg)
+    # Send party ID back to the all users connected to the doc except for sending user
+    for sid in sids:
+        if sid != request.sid:
+            socketio.emit('move_cursor', msg, room=sid)
 
 ############################## Starting The Server #############################
 
