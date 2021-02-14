@@ -10,6 +10,7 @@ import socketIOClient from 'socket.io-client';
 import { BiPencil } from 'react-icons/bi';
 import { BsFillCursorFill } from 'react-icons/bs';
 import { StickyContainer, Sticky } from 'react-sticky';
+import { getUserColour } from './Constants.js'
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 let alreadyConnected = false
@@ -17,6 +18,7 @@ let alreadyConnected = false
 let socket = socketIOClient('ws://localhost:8080')
 
 function Cursor(props) {
+  const userColour = getUserColour(props.user)
   return (
     <div
       style={{
@@ -27,7 +29,7 @@ function Cursor(props) {
         borderRadius: '5px',
       }}
     >
-      <BsFillCursorFill />
+      <BsFillCursorFill style={{fill: userColour}}/>
     </div>
   )
 }
@@ -47,18 +49,6 @@ export default function Home(props) {
   const [editUsername, setEditUsername] = useState(true);
   const [editUserBtnBgColour, setEditUserBtnBgColour] = useState('white');
   const [messageThreadData, setMessageThreadData] = useState([
-    {
-      left: 1100,
-      top: 290,
-      message_thread_id: 'a',
-      messages: [
-        {
-          user: 'Robbie',
-          timestamp: 1613281738,
-          body: "Free medium article!!!",
-        },
-      ],
-    },
     {
       left: 70,
       top: 450,
@@ -282,7 +272,7 @@ export default function Home(props) {
   return (
     <div className="canvas" onMouseMove={handleMouseMove}>
       {/* <div style={{ fontSize: '48px' }}>Convo</div> */}
-      {<Cursor pos={otherUserPos} />}
+      {<Cursor pos={otherUserPos} user={user}/>}
       {
         // Create comment thread components from an array of comment data.
         messageThreadData.map((data) => (
