@@ -3,6 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import Comment from './Comment';
+import Sockets from './Sockets'
 
 export default function Home(props) {
     const pagescreenApiUrl = 'https://api.pagescreen.io/v1/capture.json';
@@ -110,6 +111,7 @@ export default function Home(props) {
 
     return (
         <div style={{ margin: '3%' }}>
+            <Sockets/>
             <h3>Social Media Paradigm Shift</h3>
             <div>content discussion-based social media</div>
 

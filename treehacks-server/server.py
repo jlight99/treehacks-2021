@@ -47,11 +47,11 @@ def connected():
 @socketio.on('connect_to_doc')
 def handle_host_connect(msg):
     user_id = request.sid
-    doc_url = msg["url"]
+    doc_url = msg
     users[doc_url].add(user_id)
 	
 	# Send party ID back to the host
-    socketio.emit('connect_host', "connected to doc!", room = user_id)
+    socketio.emit('connect_to_doc', f"connected to doc {doc_url}!", room = user_id)
 
 ############################## Starting The Server #############################
 
