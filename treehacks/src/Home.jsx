@@ -15,10 +15,10 @@ import './Home.css'
 import { connect_to_doc, add_msg, move_cursor } from './SocketAPIs'
 import socketIOClient from 'socket.io-client'
 
-export const USER = 'Robbie'
+let alreadyConnected = false
+let socket = socketIOClient('ws://localhost:8080')
 
 export default function Home(props) {
-  const [socket, setSocket] = useState(socketIOClient('ws://localhost:8080'))
   const pagescreenApiUrl = 'https://api.pagescreen.io/v1/capture.json'
   const [url, setUrl] = useState('')
   const [user, setUser] = useState('Ellen')
@@ -86,7 +86,7 @@ export default function Home(props) {
     if (threadIdx != -1) {
       let data = messageThreadData
       data[threadIdx].messages.push({
-        user: USER,
+        user: user,
         timestamp: Date.now(),
         body: newMessage.body,
       })
@@ -199,22 +199,18 @@ export default function Home(props) {
   }
 
   const add_msg_cb = (msg) => {
-    console.log('message')
-    console.log(msg)
-    setMessageThreadData([
-      ...messageThreadData,
-      {
-        left: msg['x'],
-        top: msg['y'],
-        message_thread_id: msg['message_thread_id'],
-        messages: [
-          {
-            user: msg['user'],
-            body: msg['body'],
-          },
-        ],
-      },
-    ])
+    console.log('Got new message from another user')
+    addNewMessage({
+      left: msg['x'],
+      top: msg['y'],
+      message_thread_id: msg['message_thread_id'],
+      messages: [
+        {
+          user: msg['user'],
+          body: msg['body'],
+        },
+      ],
+    })
   }
 
   const move_cursor_cb = (pos) => {
@@ -222,9 +218,11 @@ export default function Home(props) {
     console.log(pos)
   }
 
-  useEffect(() => {
+  if (!alreadyConnected) {
+    console.log('Send info')
     connect_to_doc(socket, { url: url, user: user }, add_msg_cb, move_cursor_cb)
-  }, [])
+    alreadyConnected = true
+  }
 
   return (
     <div className="canvas">

@@ -10,12 +10,12 @@ from typing import List, Dict, Set, Tuple
 
 ########################### FLASK and SOCKETIO setup ###########################
 app = Flask('web_server')
-CORS(app)
-cors = CORS(app, resources={
-	r'/*': {
-		'origin': '*'
-	}
-})
+# CORS(app)
+# cors = CORS(app, resources={
+# 	r'/*': {
+# 		'origin': '*'
+# 	}
+# })
 
 socketio = SocketIO(app, cors_allowed_origins='*')
 
@@ -54,6 +54,7 @@ def connected():
 @socketio.on('connect_to_doc')
 def handle_host_connect(msg):
     """ Registers client to doc """
+    print("RBZ", msg, request.sid)
     sid = request.sid
     user_id = msg['user']
     page_url = msg['url']
@@ -84,6 +85,7 @@ def _add_msg_content(msg):
 
 @socketio.on('add_msg')
 def add_msg(msg):
+    print("!!!!!!!!!!!!!!!! RBZ")
     """ Add message to page """
     user_id = msg['user']
     page_url = user_to_page[user_id]
