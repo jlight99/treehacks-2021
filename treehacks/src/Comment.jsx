@@ -12,7 +12,7 @@ function Message(props) {
 }
 
 export default function CommentThread(props) {
-  console.log('RBZ', props)
+  // console.log('RBZ', props)
   const [messageThreadData, setMessageThreadData] = useState(
     props.messageThreadData,
   )

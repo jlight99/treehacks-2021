@@ -12,10 +12,14 @@ import axios from 'axios'
 import CommentThread from './Comment'
 import Sockets from './Sockets'
 import './Home.css'
+import {connect_to_doc, add_msg, move_cursor} from "./SocketAPIs"
+import socketIOClient from "socket.io-client";
 
 export default function Home(props) {
+  const [socket, setSocket] = useState(socketIOClient('ws://localhost:8080'))
   const pagescreenApiUrl = 'https://api.pagescreen.io/v1/capture.json'
   const [url, setUrl] = useState('')
+  const [user, setUser] = useState('Ellen')
   const [contentPermalink, setContentPermalink] = useState('')
   const [contentReady, setContentReady] = useState(false)
   const [openCommentTop, setOpenCommentTop] = useState(0)
@@ -72,7 +76,7 @@ export default function Home(props) {
    * Create comment components from an array of comment data.
    */
   const commentItems = () => {
-    console.log('RBZ', messageThreadData)
+    // console.log('RBZ', messageThreadData)
     return messageThreadData.map((data) => (
       <CommentThread messageThreadData={data}></CommentThread>
     ))
@@ -107,7 +111,6 @@ export default function Home(props) {
    * Send the comment data to the server in order to create a new comment.
    */
   const handleCommentSubmit = (event) => {
-    // TODO: send comment to backend
     event.preventDefault()
     const id = (+new Date()).toString(36)
     console.log('sending comment to backend')
@@ -119,14 +122,21 @@ export default function Home(props) {
         message_thread_id: id,
         messages: [
           {
-            user: 'Robbie',
-            id: 1613281738,
+            user: user,
             body: openCommentText,
           },
         ],
       },
     ])
     setDisplayOpenComment(false)
+    add_msg(socket, {
+      user: user,
+      body: openCommentText,
+      message_thread_id: id,
+      x: openCommentLeft,
+      y: openCommentTop,
+      timestamp: (+new Date())
+    });
   }
 
   /*
@@ -134,6 +144,10 @@ export default function Home(props) {
    */
   const handleUrlChange = (event) => {
     setUrl(event.target.value)
+  }
+  
+  const handleUserChange = (event) => {
+    setUser(event.target.value)
   }
 
   /*
@@ -169,9 +183,37 @@ export default function Home(props) {
       .catch((err) => console.log(err))
   }
 
+  const add_msg_cb = (msg) => {
+    console.log("message")
+    console.log(msg)
+    setMessageThreadData([
+      ...messageThreadData,
+      {
+        left: msg['x'],
+        top: msg['y'],
+        message_thread_id: msg['message_thread_id'],
+        messages: [
+          {
+            user: msg['user'],
+            body: msg['body'],
+          },
+        ],
+      },
+    ])
+  }
+
+  const move_cursor_cb = (pos) => {
+    console.log("pos")
+    console.log(pos)
+  }
+
+  useEffect(() => {
+    connect_to_doc(socket, {"url": url, "user": user}, add_msg_cb, move_cursor_cb)
+  }, []);
+
   return (
     <div className="canvas">
-      <Sockets />
+      {/* <Sockets /> */}
       {contentReady && contentPermalink && (
         <div>
           <img src={`${contentPermalink}?${Date.now()}`}></img>
@@ -221,6 +263,18 @@ export default function Home(props) {
       </Form>
 
       <div>url: {url}</div>
+
+      <Form>
+        <Form.Group controlId="formUrlInput">
+          <Form.Label>User</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="user name"
+            value={user}
+            onChange={handleUserChange}
+          />
+        </Form.Group>
+      </Form>
     </div>
   )
 }

@@ -7,7 +7,7 @@ function Sockets() {
   const [socket, setSocket] = useState(socketIOClient('ws://localhost:8080'))
 
   useEffect(() => {
-    connect_to_doc(socket, 'a_cool_doc_url', setResponse)
+    connect_to_doc(socket, 'a_cool_doc_url', (d) => console.log(d), (d) => console.log(d))
   }, [])
 
   useEffect(() => {
