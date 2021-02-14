@@ -353,7 +353,8 @@ export default function Home(props) {
 
       {contentReady && contentPermalink && (
         <div>
-          <img src={`${contentPermalink}?${Date.now()}`}></img>
+            <img src={`${contentPermalink}`}></img>
+          {/* <img src={`${contentPermalink}?${Date.now()}`}></img> */}
         </div>
       )}
     </div>);
