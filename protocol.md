@@ -1,4 +1,5 @@
 # Content
+
 ```
 // image
 {
@@ -16,14 +17,12 @@
 
 ```
 {
-  position: {
-    x: ,
-    y: ,
-  },
+  x: ,
+  y: ,
   message_thread_id: '',
   [                     // List of messages on this thread
     {
-      author: '',
+      user: '',
       body: '',
       timestamp: '',
     },
@@ -33,10 +32,11 @@
 ```
 
 # Actions
+
 ```
 // add new message/new message to thread - created by right-clicking anywhere on the canvas
 {
-  author: '',
+  user: '',
   body: '',
   message_thread_id: '',           // Generate a string of the current timestamp
   position?: {
@@ -45,6 +45,7 @@
   },
 }
 ```
+
 ```
 // add image/icon to canvas
 {
@@ -57,6 +58,7 @@
   },
 }
 ```
+
 ```
 // mouse position
 {
@@ -66,3 +68,4 @@
     y: ,
   }
 }
+```

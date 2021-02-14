@@ -1,15 +1,33 @@
-import React, { useState } from 'react';
-import './Comment.css';
+import React, { useState } from 'react'
+import './Comment.css'
 
-export default function Home(props) {
-    const [id, setId] = useState(props.id);
-    const [top, setTop] = useState(props.top);
-    const [left, setLeft] = useState(props.left);
-    const [text, setText] = useState(props.text);
+function Message(props) {
+  console.log(props)
+  return (
+    <div className="message">
+      <div className="messageAuthor">{props.data.user}</div>
+      <div className="messageBody"> {props.data.body}</div>
+    </div>
+  )
+}
 
-    return (
-        <span className="comment" style={{left: left + 'px', top: top + 'px', position: 'absolute'}}>
-            {text}
-        </span>
-    );
+export default function CommentThread(props) {
+  console.log('RBZ', props)
+  const [messageThreadData, setMessageThreadData] = useState(
+    props.messageThreadData,
+  )
+  return (
+    <div
+      className="messageThread"
+      style={{
+        left: messageThreadData.left + 'px',
+        top: messageThreadData.top + 'px',
+        position: 'absolute',
+      }}
+    >
+      {messageThreadData.messages.map((messageData) => (
+        <Message data={messageData} />
+      ))}
+    </div>
+  )
 }

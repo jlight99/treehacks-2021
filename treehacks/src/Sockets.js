@@ -7,19 +7,15 @@ function Sockets() {
 
   useEffect(() => {
     const socket = socketIOClient(ENDPOINT);
-    socket.on("connect_to_doc", data => {
-      setResponse(data)
-      console.log("data:")
-      console.log(data)
+    socket.on("connect_to_doc", (data) => {
+      setResponse(data);
+      console.log("data:");
+      console.log(data);
     });
-    socket.emit("connect_to_doc", "a_cool_doc_url")
+    socket.emit("connect_to_doc", "a_cool_doc_url");
   }, []);
 
-  return (
-    <p>
-      It's {response}
-    </p>
-  );
+  return <div>Sockets.js setResponse: {response}</div>;
 }
 
 export default Sockets;
