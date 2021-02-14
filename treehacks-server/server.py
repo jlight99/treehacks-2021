@@ -91,10 +91,7 @@ def add_msg(msg):
     _add_msg_content(msg)
 
     # Send party ID back to the all users connected to the doc
-    for sid in page_sids[page_url]:
-        if sid == request.sid:
-            continue
-        socketio.emit('add_msg', msg, room=sid)
+    socketio.emit('add_msg', msg)
 
 @socketio.on('move_cursor')
 def move_cursor(msg):
@@ -104,10 +101,7 @@ def move_cursor(msg):
     mouse_pos[user_id] = (msg["x"], msg["y"])
 
     # Send party ID back to the all users connected to the doc
-    for sid in page_sids[page_url]:
-        if sid == request.sid:
-            continue
-        socketio.emit('move_cursor', msg, room=sid)
+    socketio.emit('move_cursor', msg)
 
 ############################## Starting The Server #############################
 

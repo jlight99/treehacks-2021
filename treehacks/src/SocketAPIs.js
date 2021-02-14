@@ -8,6 +8,8 @@ export const connect_to_doc = (socket, url, add_msg_cb, move_cursor_cb) => {
 }
 
 export const add_msg = (socket, msg) => {
+    console.log("sending msg: ")
+    console.log(msg)
     socket.emit("add_msg", msg)
 }
 
