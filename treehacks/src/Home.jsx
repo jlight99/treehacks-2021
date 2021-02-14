@@ -146,6 +146,16 @@ export default function Home(props) {
     setEditUsername(false);
   };
 
+  const updateReplyPosted = (msg) => {
+    addNewMessage(msg);
+    add_msg(socket, {
+      user: user,
+      timestamp: Date.now(),
+      body: msg.body,
+      message_thread_id: msg.message_thread_id,
+    });
+  }
+
   /*
    * Send the comment data to the server in order to create a new comment.
    */
@@ -260,17 +270,18 @@ export default function Home(props) {
   // We can currently only see one other user cursor
   // TODO: make compatible for multi-user
   const move_cursor_cb = (pos) => {
-    console.log('pos:', pos)
-    setOtherUserPos([pos.x, pos.y]) // TODO: Calling this hook is so flaky!! AND MOST TIMES DOESN'T UPDATE!!
-
-    console.log('updated pos', otherUserPos)
+    // console.log('pos:', pos)
+    if (pos.user === user) {
+      return
+    }
+    setOtherUserPos([pos.x, pos.y])
+    // console.log('updated pos', otherUserPos)
   }
 
-  if (!alreadyConnected) {
+  useEffect(() => {
     console.log('Send info')
     connect_to_doc(socket, { url: url, user: user }, add_msg_cb, move_cursor_cb)
-    alreadyConnected = true
-  }
+  }, [url, user])
 
   return (
     <div className="canvas" onMouseMove={handleMouseMove}>
@@ -280,7 +291,7 @@ export default function Home(props) {
         messageThreadData.map((data) => (
           <CommentThread
             messageThreadData={data}
-            addNewMessage={addNewMessage}
+            addNewMessage={updateReplyPosted}
           ></CommentThread>
         ))
       }
