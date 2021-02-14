@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from 'react'
-import Button from 'react-bootstrap/Button'
-import Form from 'react-bootstrap/Form'
-import axios from 'axios'
-import CommentThread from './Comment'
-import Sockets from './Sockets'
-import './Home.css'
-import { connect_to_doc, add_msg, move_cursor } from './SocketAPIs'
-import socketIOClient from 'socket.io-client'
+import React, { useEffect, useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import axios from 'axios';
+import CommentThread from './Comment';
+import Sockets from './Sockets';
+import './Home.css';
+import { connect_to_doc, add_msg, move_cursor } from './SocketAPIs';
+import socketIOClient from 'socket.io-client';
+import { BiPencil } from 'react-icons/bi';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+
+// import { Pencil } from 'react-bootstrap-icons';
 
 let alreadyConnected = false
 // let mouseMoveCounter = 0
@@ -29,15 +33,18 @@ function Cursor(props) {
 
 export default function Home(props) {
   const pagescreenApiUrl = 'https://api.pagescreen.io/v1/capture.json'
-  const [url, setUrl] = useState('')
-  const [user, setUser] = useState('Ellen')
-  const [contentPermalink, setContentPermalink] = useState('')
-  const [contentReady, setContentReady] = useState(false)
-  const [openCommentTop, setOpenCommentTop] = useState(0)
-  const [openCommentLeft, setOpenCommentLeft] = useState(0)
-  const [openCommentText, setOpenCommentText] = useState('')
-  const [displayOpenComment, setDisplayOpenComment] = useState(false)
-  const [otherUserPos, setOtherUserPos] = useState([10, 10])
+  const [url, setUrl] = useState('');
+  const [user, setUser] = useState('Ellen');
+  const [contentPermalink, setContentPermalink] = useState('');
+  const [contentReady, setContentReady] = useState(false);
+  const [editUrl, setEditUrl] = useState(true);
+  const [openCommentTop, setOpenCommentTop] = useState(0);
+  const [openCommentLeft, setOpenCommentLeft] = useState(0);
+  const [openCommentText, setOpenCommentText] = useState('');
+  const [displayOpenComment, setDisplayOpenComment] = useState(false);
+  const [otherUserPos, setOtherUserPos] = useState([10, 10]);
+  const [editUsername, setEditUsername] = useState(true);
+  const [editUserBtnBgColour, setEditUserBtnBgColour] = useState('white');
   const [messageThreadData, setMessageThreadData] = useState([
     {
       left: 300,
@@ -86,12 +93,12 @@ export default function Home(props) {
         },
       ],
     },
-  ])
+  ]);
 
   const addNewMessage = (newMessage) => {
     const threadIdx = messageThreadData.findIndex(
       (thread) => thread.message_thread_id == newMessage.message_thread_id,
-    )
+    );
     // If the thread is found!
     if (threadIdx != -1) {
       let data = messageThreadData.concat();
@@ -107,7 +114,7 @@ export default function Home(props) {
     } else {
       console.log('Invalid new message', newMessage);
     }
-  }
+  };
 
   useEffect(() => {
     document.addEventListener('dblclick', handleClick);
@@ -125,14 +132,19 @@ export default function Home(props) {
       setOpenCommentTop(e.pageY)
       setDisplayOpenComment(true)
     }
-  }
+  };
 
   /*
    * Update the comment text as the user types to display their changes in real time.
    */
   const handleCommentTextChange = (event) => {
     setOpenCommentText(event.target.value)
-  }
+  };
+
+  const handleUserSubmit = (event) => {
+    event.preventDefault();
+    setEditUsername(false);
+  };
 
   /*
    * Send the comment data to the server in order to create a new comment.
@@ -164,18 +176,22 @@ export default function Home(props) {
       timestamp: +new Date(),
     });
     setOpenCommentText('');
-  }
+  };
 
   /*
    * Update the input URL as the user types to display their changes in real time.
    */
   const handleUrlChange = (event) => {
     setUrl(event.target.value)
-  }
+  };
 
   const handleUserChange = (event) => {
     setUser(event.target.value)
-  }
+  };
+
+  const handleEditUserClick = (event) => {
+    setEditUsername(true);
+  };
 
   /*
    * Accept an URL as input from the user, capture a screenshot of that URL using the PageScreen API,
@@ -204,8 +220,9 @@ export default function Home(props) {
 
         var millisecondsToWait = 1000
         setTimeout(function () {
-          setContentReady(true)
-        }, millisecondsToWait)
+          setContentReady(true);
+        }, millisecondsToWait);
+        setEditUrl(false);
       })
       .catch((err) => console.log(err))
   }
@@ -234,7 +251,11 @@ export default function Home(props) {
       ],
     }
     addNewMessage(newMessage)
-  }
+  };
+
+  const handleEditUrlClick = () => {
+    setEditUrl(true);
+  };
 
   // We can currently only see one other user cursor
   // TODO: make compatible for multi-user
@@ -253,12 +274,6 @@ export default function Home(props) {
 
   return (
     <div className="canvas" onMouseMove={handleMouseMove}>
-      {contentReady && contentPermalink && (
-        <div>
-          <img src={`${contentPermalink}?${Date.now()}`}></img>
-        </div>
-      )}
-
       {<Cursor pos={otherUserPos} />}
       {
         // Create comment thread components from an array of comment data.
@@ -268,6 +283,26 @@ export default function Home(props) {
             addNewMessage={addNewMessage}
           ></CommentThread>
         ))
+      }
+
+      {editUsername &&
+        <Form onSubmit={handleUserSubmit}>
+          <Form.Group controlId="formUrlInput">
+            <Form.Label style={{paddingRight: '5px'}}>User</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="user name"
+              value={user}
+              onChange={handleUserChange}
+            />
+          </Form.Group>
+        </Form>
+      }
+      {!editUsername &&
+        <div>
+          <span>User: {user}</span>
+          <Button style={{border: 'none', backgroundColor: editUserBtnBgColour, borderColor: 'blue'}} className="editUserBtn" onClick={handleEditUserClick}><BiPencil /></Button>
+        </div>
       }
 
       {displayOpenComment && (
@@ -289,15 +324,15 @@ export default function Home(props) {
             />
           </Form.Group>
 
-          <Button variant="primary" type="submit">
+          {/* <Button variant="primary" type="submit">
             Submit
-          </Button>
+          </Button> */}
         </Form>
       )}
 
-      <Form onSubmit={handleUrlSubmit}>
+      {editUrl && <Form onSubmit={handleUrlSubmit}>
         <Form.Group controlId="formUrlInput">
-          <Form.Label>Media Content URL</Form.Label>
+          <Form.Label style={{paddingRight: '5px'}}>Media Content URL</Form.Label>
           <Form.Control
             type="url"
             placeholder="URL"
@@ -306,24 +341,22 @@ export default function Home(props) {
           />
         </Form.Group>
 
-        <Button variant="primary" type="submit">
+        {/* <Button variant="primary" type="submit">
           Submit
-        </Button>
-      </Form>
+        </Button> */}
+      </Form>}
+      {!editUrl &&
+        <div>
+          <span>Media Content URL: {url}</span>
+          <Button style={{border: 'none', backgroundColor: editUserBtnBgColour, borderColor: 'blue'}} className="editUserBtn" onClick={handleEditUrlClick}><BiPencil /></Button>
+        </div>
+      }
 
-      <div>url: {url}</div>
-
-      <Form>
-        <Form.Group controlId="formUrlInput">
-          <Form.Label>User</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="user name"
-            value={user}
-            onChange={handleUserChange}
-          />
-        </Form.Group>
-      </Form>
+      {contentReady && contentPermalink && (
+        <div>
+          <img src={`${contentPermalink}?${Date.now()}`}></img>
+        </div>
+      )}
     </div>
   )
 }
