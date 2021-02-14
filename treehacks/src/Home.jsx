@@ -285,9 +285,8 @@ export default function Home(props) {
   }, [url, user])
 
   return (
-    // <StickyContainer>
-      <div className="canvas" onMouseMove={handleMouseMove}>
-        <div style={{font: '48px'}}>Convo</div>
+    <div className="canvas" onMouseMove={handleMouseMove}>
+      <div style={{ font: '48px' }}>Convo</div>
       {<Cursor pos={otherUserPos} />}
       {
         // Create comment thread components from an array of comment data.
@@ -302,7 +301,7 @@ export default function Home(props) {
       {editUsername &&
         <Form onSubmit={handleUserSubmit}>
           <Form.Group controlId="formUrlInput">
-            <Form.Label style={{paddingRight: '5px'}}>User</Form.Label>
+            <Form.Label style={{ paddingRight: '5px' }}>User</Form.Label>
             <Form.Control
               type="text"
               placeholder="user name"
@@ -314,29 +313,27 @@ export default function Home(props) {
       }
       {!editUsername &&
         <div>
-          {/* <Sticky> */}
-            {({
-              style,
-            }) => (
-              <div className="topSidebar" style={style}>
-                <div style={{ padding: '5px' }}>
-                  <img src="Robbie.svg"></img>
-                </div>
-                <div style={{ padding: '5px' }}>
-                  <img src="AsianDude.svg"></img>
-                </div>
+          {({
+            style,
+          }) => (
+            <div className="topSidebar" style={style}>
+              <div style={{ padding: '5px' }}>
+                <img src="Robbie.svg"></img>
               </div>
-            )}
-          {/* </Sticky> */}
+              <div style={{ padding: '5px' }}>
+                <img src="AsianDude.svg"></img>
+              </div>
+            </div>
+          )}
           <div className="topSidebar">
-                <div style={{ padding: '5px' }}>
-                  <img src="Robbie.svg"></img>
-                </div>
-                <div style={{ padding: '5px' }}>
-                  <img src="AsianDude.svg"></img>
-                </div>
-              </div>
-          <span style={{alignItems: 'center', justifySelf: 'center'}}>
+            <div style={{ padding: '5px' }}>
+              <img src="Robbie.svg"></img>
+            </div>
+            <div style={{ padding: '5px' }}>
+              <img src="AsianDude.svg"></img>
+            </div>
+          </div>
+          <span style={{ alignItems: 'center', justifySelf: 'center' }}>
             {<Cursor pos={otherUserPos} />}
             {
               // Create comment thread components from an array of comment data.
@@ -386,10 +383,6 @@ export default function Home(props) {
                     onChange={handleCommentTextChange}
                   />
                 </Form.Group>
-
-                {/* <Button variant="primary" type="submit">
-            Submit
-          </Button> */}
               </Form>
             )}
 
@@ -403,10 +396,6 @@ export default function Home(props) {
                   onChange={handleUrlChange}
                 />
               </Form.Group>
-
-              {/* <Button variant="primary" type="submit">
-          Submit
-        </Button> */}
             </Form>}
             {!editUrl &&
               <div>
@@ -421,11 +410,7 @@ export default function Home(props) {
               </div>
             )}
           </span>
-
         </div>
-      </div>
-
-    // </StickyContainer>
-
-  )
+      }
+    </div>);
 }
