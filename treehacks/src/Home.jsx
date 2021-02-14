@@ -267,9 +267,9 @@ export default function Home(props) {
   // TODO: make compatible for multi-user
   const move_cursor_cb = (pos) => {
     // console.log('pos:', pos)
-    if (pos.user === user) {
-      return
-    }
+    // if (pos.user === user) {
+    //   return
+    // }
     setOtherUserPos([pos.x, pos.y])
     // console.log('updated pos', otherUserPos)
   }
@@ -281,7 +281,7 @@ export default function Home(props) {
 
   return (
     <div className="canvas" onMouseMove={handleMouseMove}>
-      <div style={{ fontSize: '48px' }}>Convo</div>
+      {/* <div style={{ fontSize: '48px' }}>Convo</div> */}
       {<Cursor pos={otherUserPos} />}
       {
         // Create comment thread components from an array of comment data.
