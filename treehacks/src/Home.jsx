@@ -14,6 +14,10 @@ export default function Home(props) {
     const [openCommentText, setOpenCommentText] = useState('');
     const [displayOpenComment, setDisplayOpenComment] = useState(false);
 
+    /*
+     * Dummy comment data, to be replaced once our pipeline is working, and we can request
+     * real comment data from the server.
+     */
     const commentData = [
         {
             "id": 1,
@@ -35,6 +39,9 @@ export default function Home(props) {
         },
     ];
 
+    /*
+     * Create comment components from an array of comment data.
+     */
     const commentItems = commentData.map((data) =>
         <Comment
             key={data.id}
@@ -53,6 +60,9 @@ export default function Home(props) {
         };
     });
 
+    /*
+     * Upon user mouse click, open a textfield where they can type their comment.
+     */
     const handleClick = e => {
         if (!displayOpenComment) {
             setOpenCommentLeft(e.x);
@@ -61,10 +71,16 @@ export default function Home(props) {
         }
     };
 
+    /*
+     * Update the comment text as the user types to display their changes in real time.
+     */
     const handleCommentTextChange = event => {
         setOpenCommentText(event.target.value);
     };
 
+    /*
+     * Send the comment data to the server in order to create a new comment.
+     */
     const handleCommentSubmit = event => {
         // TODO send comment to backend
         event.preventDefault();
@@ -72,13 +88,16 @@ export default function Home(props) {
     };
 
     /*
-     * Accept an URL as input from the user, capture a screenshot of that URL using the PageScreen API,
-     * and display the screenshot on our webpage.
+     * Update the input URL as the user types to display their changes in real time.
      */
     const handleUrlChange = event => {
         setUrl(event.target.value);
     };
 
+    /*
+     * Accept an URL as input from the user, capture a screenshot of that URL using the PageScreen API,
+     * and display the screenshot on our webpage.
+     */
     const handleUrlSubmit = event => {
         event.preventDefault();
         axios({
