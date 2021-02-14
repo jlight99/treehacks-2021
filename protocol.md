@@ -19,7 +19,7 @@
   x: ,
   y: ,
   message_thread_id: '',
-  [                     // List of messages on this thread
+  messages: [                     // List of messages on this thread
     {
       author: '',
       body: '',

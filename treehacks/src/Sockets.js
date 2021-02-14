@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
 import socketIOClient from "socket.io-client";
-const ENDPOINT = "http://localhost:8080";
+import {connect_to_doc, add_msg} from "./SocketAPIs"
+
 
 function Sockets() {
   const [response, setResponse] = useState("");
+  const [socket, setSocket] = useState(socketIOClient("ws://localhost:8080"));
 
   useEffect(() => {
-    const socket = socketIOClient(ENDPOINT);
-    socket.on("connect_to_doc", data => {
-      setResponse(data)
-      console.log("data:")
-      console.log(data)
-    });
-    socket.emit("connect_to_doc", "a_cool_doc_url")
+    connect_to_doc(socket, "a_cool_doc_url", setResponse)
   }, []);
+
+  useEffect(() => {
+    add_msg(socket, {"x": 128, "y": 900, "message_thread_id": "29012921", "body": "yo", "timestamp": 192121090, "user": 'billy jean'})
+  });
 
   return (
     <p>

@@ -48,38 +48,42 @@ def root_page():
 
 ############################ SocketIO Event Handlers ###########################
 
-# Always called when frontends or hosts initially connect
 @socketio.on('connect')
 def connected():
+    """ Always called when frontends or hosts initially connect """
     print(f'client with sid {request.sid} connected')
 
-# Registers client to doc
+
 @socketio.on('connect_to_doc')
 def handle_host_connect(msg):
+    """ Registers client to doc """
     user_id = request.sid
     page_url = msg
     page_users[page_url].add(user_id)
     user_to_page[user_id] = page_url
 
-# Send party ID back to the host
+    # Send party ID back to the host
     socketio.emit('connect_to_doc',
                   f"connected to doc {page_url}!", room=user_id)
+
 
 def _add_msg_content(msg):
     def add_thread():
         user_id = request.sid
         page_url = user_to_page[user_id]
-        page_threads[page_url].append(msg.message_thread_id)
+        page_threads[page_url].append(msg["message_thread_id"])
 
-    thread_id = msg.message_thread_id
+    print(msg)
+    thread_id = msg["message_thread_id"]
     if thread_id not in thread_messages:
         add_thread()
-    thread_messages[msg.message_thread_id].append(
-        {"author": msg.author, "body": msg.body, "timestamp": msg.timestamp})
+    thread_messages[msg["message_thread_id"]].append(
+        {"user": msg["user"], "body": msg["body"], "timestamp": msg["timestamp"]})
 
-# Registers client to doc
+
 @socketio.on('add_msg')
-def handle_host_connect(msg):
+def add_msg(msg):
+    """ Add message to page """
     user_id = request.sid
     page_url = user_to_page[user_id]
     _add_msg_content(msg)
@@ -88,12 +92,20 @@ def handle_host_connect(msg):
     for user in page_users[page_url]:
         socketio.emit('add_msg', msg, room=user)
 
+# @socketio.on('move_cursor')
+# def move_cursor(msg):
+#     """ Move cursor page """
+#     user_id = request.sid
+#     page_url = user_to_page[user_id]
+#     _add_msg_content(msg)
+
+#     # Send party ID back to the all users connected to the doc
+#     for user in page_users[page_url]:
+#         socketio.emit('add_msg', msg, room=user)
+
 ############################## Starting The Server #############################
 
 
 if __name__ == '__main__':
-	try:
-		print('Server started')
-		socketio.run(app, host='localhost', port=8080)
-	except:
-		pass
+    print('Server started')
+    socketio.run(app, host='localhost', port=8080)
