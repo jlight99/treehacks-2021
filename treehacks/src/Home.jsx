@@ -13,6 +13,8 @@ import CommentThread from './Comment'
 import Sockets from './Sockets'
 import './Home.css'
 
+export const USER = 'Robbie'
+
 export default function Home(props) {
   const pagescreenApiUrl = 'https://api.pagescreen.io/v1/capture.json'
   const [url, setUrl] = useState('')
@@ -48,7 +50,7 @@ export default function Home(props) {
       ],
     },
     {
-      left: 420,
+      left: 800,
       top: 380,
       message_thread_id: 'c',
       messages: [
@@ -58,24 +60,39 @@ export default function Home(props) {
           body:
             'full stack 2nd coop by the way asdlk jasldk jal;sk fjlaskdfjal;skdfjalksj;lk sj;lk jasl; kjasld kjfalskdfj l;sadkfjals;dkfj;alskdfjl;sakdjfa;sldfj;alskfja;lsdjfa',
         },
+        {
+          user: 'Robbie',
+          timestamp: 1613281738,
+          body: "cookie you're a footer",
+        },
+        {
+          user: 'Ellen',
+          timestamp: 1613281738,
+          body: "cookie you're a footer",
+        },
       ],
     },
   ])
 
-  /*
-   * Dummy comment data, to be replaced once our pipeline is working, and we can request
-   * real comment data from the server.
-   */
-  // let testData = []
-
-  /*
-   * Create comment components from an array of comment data.
-   */
-  const commentItems = () => {
-    console.log('RBZ', messageThreadData)
-    return messageThreadData.map((data) => (
-      <CommentThread messageThreadData={data}></CommentThread>
-    ))
+  const addNewMessage = (newMessage) => {
+    const threadIdx = messageThreadData.findIndex(
+      (thread) => thread.message_thread_id == newMessage.message_thread_id,
+    )
+    // If the thread is found!
+    if (threadIdx != -1) {
+      let data = messageThreadData
+      data[threadIdx].messages.push({
+        user: USER,
+        timestamp: Date.now(),
+        body: newMessage.body,
+      })
+      setMessageThreadData(data)
+    } else if (newMessage.left && newMessage.top) {
+      // If we are creating a new message
+      setMessageThreadData([...messageThreadData, newMessage])
+    } else {
+      console.log('Invalid new message', newMessage)
+    }
   }
 
   useEffect(() => {
@@ -110,22 +127,20 @@ export default function Home(props) {
     // TODO: send comment to backend
     event.preventDefault()
     const id = (+new Date()).toString(36)
+    const timestamp = Date.now()
     console.log('sending comment to backend')
-    setMessageThreadData([
-      ...messageThreadData,
-      {
-        left: openCommentLeft,
-        top: openCommentTop,
-        message_thread_id: id,
-        messages: [
-          {
-            user: 'Robbie',
-            id: 1613281738,
-            body: openCommentText,
-          },
-        ],
-      },
-    ])
+    addNewMessage({
+      left: openCommentLeft,
+      top: openCommentTop,
+      message_thread_id: id,
+      messages: [
+        {
+          user: 'Robbie',
+          timestamp: 1613281738,
+          body: openCommentText,
+        },
+      ],
+    })
     setDisplayOpenComment(false)
   }
 
@@ -154,7 +169,6 @@ export default function Home(props) {
       },
     })
       .then((data) => {
-        console.log(data)
         if (data.data.data[0]) {
           setContentPermalink(data.data.data[0].permalink)
         } else {
@@ -178,7 +192,16 @@ export default function Home(props) {
         </div>
       )}
 
-      {commentItems()}
+      {
+        // Create comment thread components from an array of comment data.
+        messageThreadData.map((data) => (
+          <CommentThread
+            messageThreadData={data}
+            addNewMessage={addNewMessage}
+          ></CommentThread>
+        ))
+      }
+
       {displayOpenComment && (
         <Form
           onSubmit={handleCommentSubmit}

@@ -1,21 +1,54 @@
 import React, { useState } from 'react'
 import './Comment.css'
+import { getUserColour } from './Constants.js'
+import Form from 'react-bootstrap/Form'
 
 function Message(props) {
-  console.log(props)
+  const userColor = getUserColour(props.data.user)
   return (
     <div className="message">
-      <div className="messageAuthor">{props.data.user}</div>
+      <div className="messageAuthor" style={{ color: userColor }}>
+        {props.data.user}
+      </div>
       <div className="messageBody"> {props.data.body}</div>
     </div>
   )
 }
 
+function ReplyForm(props) {
+  const [replyMessage, setReplyMessage] = useState('')
+
+  const handleCommentTextChange = (e) => {
+    setReplyMessage(e.target.value)
+  }
+  const handleKeyPress = (target) => {
+    if (target.charCode == 13) {
+      props.addNewMessage({
+        message_thread_id: props.messageThreadId,
+        body: replyMessage,
+      })
+    }
+  }
+
+  return (
+    <Form.Group controlId="formReply">
+      <Form.Control
+        type="text"
+        placeholder="Reply"
+        // value={openCommentText}
+        onChange={handleCommentTextChange}
+        onKeyPress={handleKeyPress}
+        className="reply"
+      />
+    </Form.Group>
+  )
+}
+
 export default function CommentThread(props) {
-  console.log('RBZ', props)
   const [messageThreadData, setMessageThreadData] = useState(
     props.messageThreadData,
   )
+  const borderColor = getUserColour(messageThreadData.messages[0].user)
   return (
     <div
       className="messageThread"
@@ -23,11 +56,16 @@ export default function CommentThread(props) {
         left: messageThreadData.left + 'px',
         top: messageThreadData.top + 'px',
         position: 'absolute',
+        borderColor: borderColor,
       }}
     >
       {messageThreadData.messages.map((messageData) => (
         <Message data={messageData} />
       ))}
+      <ReplyForm
+        messageThreadId={messageThreadData.message_thread_id}
+        addNewMessage={props.addNewMessage}
+      />
     </div>
   )
 }
