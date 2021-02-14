@@ -5,7 +5,7 @@ from flask_cors import CORS
 import json
 import uuid
 
-from typing import List, Dict, Set
+from typing import List, Dict, Set, Tuple
 
 
 ########################### FLASK and SOCKETIO setup ###########################
@@ -33,7 +33,7 @@ page_users: Dict[str, Set[str]] = defaultdict(set)
 user_to_page: Dict[str, str] = {}
 thread_messages: Dict[str, List[dict]] = defaultdict(list)
 page_threads: Dict[str, List[str]] = defaultdict(list)
-
+mouse_pos: Dict[str, Tuple[int, int]] = {}
 
 ################################ HTML Rendering ################################
 # This method is only used to render the test webpage and can be diabled on your
@@ -92,16 +92,17 @@ def add_msg(msg):
     for user in page_users[page_url]:
         socketio.emit('add_msg', msg, room=user)
 
-# @socketio.on('move_cursor')
-# def move_cursor(msg):
-#     """ Move cursor page """
-#     user_id = request.sid
-#     page_url = user_to_page[user_id]
-#     _add_msg_content(msg)
 
-#     # Send party ID back to the all users connected to the doc
-#     for user in page_users[page_url]:
-#         socketio.emit('add_msg', msg, room=user)
+@socketio.on('move_cursor')
+def move_cursor(msg):
+    """ Move cursor page """
+    user_id = request.sid
+    page_url = user_to_page[user_id]
+    mouse_pos[user_id] = (msg["x"], msg["y"])
+
+    # Send party ID back to the all users connected to the doc
+    for user in page_users[page_url]:
+        socketio.emit('move_cursor', msg, room=user)
 
 ############################## Starting The Server #############################
 

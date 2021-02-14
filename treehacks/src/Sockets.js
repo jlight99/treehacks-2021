@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
-import socketIOClient from 'socket.io-client'
-import { connect_to_doc, add_msg } from './SocketAPIs'
+import React, { useState, useEffect } from "react";
+import socketIOClient from "socket.io-client";
+import {connect_to_doc, add_msg, move_cursor} from "./SocketAPIs"
 
 function Sockets() {
   const [response, setResponse] = useState('')
@@ -21,7 +21,15 @@ function Sockets() {
     })
   })
 
-  return <div>Sockets.js setResponse: {response}</div>
+  useEffect(() => {
+    move_cursor(socket, {"x": 12, "y": 40, "user": "boi"})
+  });
+
+  return (
+    <p>
+      It's {response}
+    </p>
+  );
 }
 
 export default Sockets
