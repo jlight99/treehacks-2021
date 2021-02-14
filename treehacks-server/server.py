@@ -4,9 +4,9 @@ from flask_socketio import SocketIO, join_room
 from flask_cors import CORS
 import json
 import uuid
+from database import db_init, add_message_thread, add_message, get_message_threads
 
 from typing import List, Dict, Set, Tuple
-
 
 ########################### FLASK and SOCKETIO setup ###########################
 app = Flask('web_server')
@@ -20,11 +20,8 @@ cors = CORS(app, resources={
 socketio = SocketIO(app, cors_allowed_origins='*')
 
 
-class MessageThread:
-    x: str
-    y: str
-    thread_id: str
-    messages: List[str]
+########################### Database setup ###########################
+db = db_init()
 
 
 ############################### Global Variables ###############################
@@ -72,13 +69,16 @@ def _add_msg_content(msg):
         user_id = request.sid
         page_url = user_to_page[user_id]
         page_threads[page_url].append(msg["message_thread_id"])
+        add_message_thread(db, {"x": msg["x"], "y": msg["y"], "id": msg["message_thread_id"]})
 
     print(msg)
     thread_id = msg["message_thread_id"]
     if thread_id not in thread_messages:
         add_thread()
-    thread_messages[msg["message_thread_id"]].append(
-        {"user": msg["user"], "body": msg["body"], "timestamp": msg["timestamp"]})
+
+    new_msg = {"user": msg["user"], "body": msg["body"], "timestamp": msg["timestamp"]}
+    thread_messages[msg["message_thread_id"]].append(new_msg)
+    add_message(db, new_msg, msg["message_thread_id"])
 
 
 @socketio.on('add_msg')

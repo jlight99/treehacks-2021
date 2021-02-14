@@ -90,8 +90,8 @@ export default function Home(props) {
    */
   const handleClick = (e) => {
     if (!displayOpenComment) {
-      setOpenCommentLeft(e.x)
-      setOpenCommentTop(e.y)
+      setOpenCommentLeft(e.pageX)
+      setOpenCommentTop(e.pageY)
       setDisplayOpenComment(true)
     }
   }
@@ -161,7 +161,7 @@ export default function Home(props) {
           setContentPermalink(data.data.data.permalink)
         }
 
-        var millisecondsToWait = 2000
+        var millisecondsToWait = 1000
         setTimeout(function () {
           setContentReady(true)
         }, millisecondsToWait)

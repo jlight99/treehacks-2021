@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import socketIOClient from "socket.io-client";
+import socketIOClient from "socket.io-client/dist/socket.io";
 import {connect_to_doc, add_msg, move_cursor} from "./SocketAPIs"
 
 function Sockets() {
@@ -23,6 +23,7 @@ function Sockets() {
 
   useEffect(() => {
     move_cursor(socket, {"x": 12, "y": 40, "user": "boi"})
+    add_msg(socket, {"x": 348, "y": 720, "message_thread_id": "angriborb", "body": "sleeeeep", "timestamp": 192131090, "user": 'goat'})
   });
 
   return (
