@@ -48,49 +48,44 @@ export default function Home(props) {
   const [editUserBtnBgColour, setEditUserBtnBgColour] = useState('white');
   const [messageThreadData, setMessageThreadData] = useState([
     {
-      left: 300,
-      top: 420,
+      left: 1100,
+      top: 290,
       message_thread_id: 'a',
       messages: [
         {
           user: 'Robbie',
           timestamp: 1613281738,
-          body: "cookie you're a footer",
+          body: "Free medium article!!!",
         },
       ],
     },
     {
-      left: 250,
-      top: 225,
+      left: 70,
+      top: 450,
       message_thread_id: 'b',
       messages: [
         {
           user: 'Bimesh',
           timestamp: 1613281738,
-          body: 'random guy on reddit',
+          body: 'I think recycling reducing and resuing is not as important as dealing with carbon emissions etc. That’s why we should all start using Nuro! ',
+        },
+        {
+          user: 'Robbie',
+          timestamp: 1613281738,
+          body: "Idk man, I think the 3 Rs are still pretty important...",
         },
       ],
     },
     {
-      left: 800,
-      top: 380,
+      left: 900,
+      top: 680,
       message_thread_id: 'c',
       messages: [
         {
           user: 'Ellen',
           timestamp: 1613281738,
           body:
-            'full stack 2nd coop by the way asdlk jasldk jal;sk fjlaskdfjal;skdfjalksj;lk sj;lk jasl; kjasld kjfalskdfj l;sadkfjals;dkfj;alskdfjl;sakdjfa;sldfj;alskfja;lsdjfa',
-        },
-        {
-          user: 'Robbie',
-          timestamp: 1613281738,
-          body: "cookie you're a footer",
-        },
-        {
-          user: 'Ellen',
-          timestamp: 1613281738,
-          body: "cookie you're a footer",
+            'This image is so representative of the issue with recycling across the world',
         },
       ],
     },
@@ -286,7 +281,7 @@ export default function Home(props) {
 
   return (
     <div className="canvas" onMouseMove={handleMouseMove}>
-      <div style={{ font: '48px' }}>Convo</div>
+      <div style={{ fontSize: '48px' }}>Convo</div>
       {<Cursor pos={otherUserPos} />}
       {
         // Create comment thread components from an array of comment data.
@@ -297,6 +292,15 @@ export default function Home(props) {
           ></CommentThread>
         ))
       }
+
+      <div className="topSidebar">
+        <div style={{ padding: '5px' }}>
+          <img src="Robbie.svg"></img>
+        </div>
+        <div style={{ padding: '5px' }}>
+          <img src="AsianDude.svg"></img>
+        </div>
+      </div>
 
       {editUsername &&
         <Form onSubmit={handleUserSubmit}>
@@ -313,104 +317,54 @@ export default function Home(props) {
       }
       {!editUsername &&
         <div>
-          {({
-            style,
-          }) => (
-            <div className="topSidebar" style={style}>
-              <div style={{ padding: '5px' }}>
-                <img src="Robbie.svg"></img>
-              </div>
-              <div style={{ padding: '5px' }}>
-                <img src="AsianDude.svg"></img>
-              </div>
-            </div>
-          )}
-          <div className="topSidebar">
-            <div style={{ padding: '5px' }}>
-              <img src="Robbie.svg"></img>
-            </div>
-            <div style={{ padding: '5px' }}>
-              <img src="AsianDude.svg"></img>
-            </div>
-          </div>
-          <span style={{ alignItems: 'center', justifySelf: 'center' }}>
-            {<Cursor pos={otherUserPos} />}
-            {
-              // Create comment thread components from an array of comment data.
-              messageThreadData.map((data) => (
-                <CommentThread
-                  messageThreadData={data}
-                  addNewMessage={addNewMessage}
-                ></CommentThread>
-              ))
-            }
-
-            {editUsername &&
-              <Form onSubmit={handleUserSubmit}>
-                <Form.Group controlId="formUrlInput">
-                  <Form.Label style={{ paddingRight: '5px' }}>User</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="user name"
-                    value={user}
-                    onChange={handleUserChange}
-                  />
-                </Form.Group>
-              </Form>
-            }
-            {!editUsername &&
-              <div>
-                <span>User: {user}</span>
-                <Button style={{ border: 'none', backgroundColor: editUserBtnBgColour, borderColor: 'blue' }} className="editUserBtn" onClick={handleEditUserClick}><BiPencil /></Button>
-              </div>
-            }
-
-            {displayOpenComment && (
-              <Form
-                onSubmit={handleCommentSubmit}
-                style={{
-                  left: openCommentLeft,
-                  top: openCommentTop,
-                  position: 'absolute',
-                  outline: 'none',
-                }}
-              >
-                <Form.Group controlId="formComment">
-                  <Form.Control
-                    type="text"
-                    placeholder="Comment..."
-                    value={openCommentText}
-                    onChange={handleCommentTextChange}
-                  />
-                </Form.Group>
-              </Form>
-            )}
-
-            {editUrl && <Form onSubmit={handleUrlSubmit}>
-              <Form.Group controlId="formUrlInput">
-                <Form.Label style={{ paddingRight: '5px' }}>Media Content URL</Form.Label>
-                <Form.Control
-                  type="url"
-                  placeholder="URL"
-                  value={url}
-                  onChange={handleUrlChange}
-                />
-              </Form.Group>
-            </Form>}
-            {!editUrl &&
-              <div>
-                <span>Media Content URL: {url}</span>
-                <Button style={{ border: 'none', backgroundColor: editUserBtnBgColour, borderColor: 'blue' }} className="editUserBtn" onClick={handleEditUrlClick}><BiPencil /></Button>
-              </div>
-            }
-
-            {contentReady && contentPermalink && (
-              <div>
-                <img src={`${contentPermalink}?${Date.now()}`}></img>
-              </div>
-            )}
-          </span>
+          <span>User: {user}</span>
+          <Button style={{ border: 'none', backgroundColor: editUserBtnBgColour, borderColor: 'blue' }} className="editUserBtn" onClick={handleEditUserClick}><BiPencil /></Button>
         </div>
       }
+
+      {editUrl && <Form onSubmit={handleUrlSubmit}>
+        <Form.Group controlId="formUrlInput">
+          <Form.Label style={{ paddingRight: '5px' }}>Media Content URL</Form.Label>
+          <Form.Control
+            type="url"
+            placeholder="URL"
+            value={url}
+            onChange={handleUrlChange}
+          />
+        </Form.Group>
+      </Form>}
+      {!editUrl &&
+        <div>
+          <span>Media Content URL: {url}</span>
+          <Button style={{ border: 'none', backgroundColor: editUserBtnBgColour, borderColor: 'blue' }} className="editUserBtn" onClick={handleEditUrlClick}><BiPencil /></Button>
+        </div>
+      }
+
+      {displayOpenComment && (
+        <Form
+          onSubmit={handleCommentSubmit}
+          style={{
+            left: openCommentLeft,
+            top: openCommentTop,
+            position: 'absolute',
+            outline: 'none',
+          }}
+        >
+          <Form.Group controlId="formComment">
+            <Form.Control
+              type="text"
+              placeholder="Comment..."
+              value={openCommentText}
+              onChange={handleCommentTextChange}
+            />
+          </Form.Group>
+        </Form>
+      )}
+
+      {contentReady && contentPermalink && (
+        <div>
+          <img src={`${contentPermalink}?${Date.now()}`}></img>
+        </div>
+      )}
     </div>);
 }
