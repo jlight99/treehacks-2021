@@ -8,9 +8,9 @@ import './Home.css';
 import { connect_to_doc, add_msg, move_cursor } from './SocketAPIs';
 import socketIOClient from 'socket.io-client';
 import { BiPencil } from 'react-icons/bi';
+import { BsFillCursorFill } from 'react-icons/bs';
+import { StickyContainer, Sticky } from 'react-sticky';
 // import 'bootstrap/dist/css/bootstrap.min.css';
-
-// import { Pencil } from 'react-bootstrap-icons';
 
 let alreadyConnected = false
 // let mouseMoveCounter = 0
@@ -21,12 +21,13 @@ function Cursor(props) {
     <div
       style={{
         position: 'absolute',
-        backgroundColor: 'black',
+        // backgroundColor: 'black',
         left: props.pos[0] + 'px',
         top: props.pos[1] + 'px',
+        borderRadius: '5px',
       }}
     >
-      Hi
+      <BsFillCursorFill />
     </div>
   )
 }
@@ -273,90 +274,122 @@ export default function Home(props) {
   }
 
   return (
-    <div className="canvas" onMouseMove={handleMouseMove}>
-      {<Cursor pos={otherUserPos} />}
-      {
-        // Create comment thread components from an array of comment data.
-        messageThreadData.map((data) => (
-          <CommentThread
-            messageThreadData={data}
-            addNewMessage={addNewMessage}
-          ></CommentThread>
-        ))
-      }
-
-      {editUsername &&
-        <Form onSubmit={handleUserSubmit}>
-          <Form.Group controlId="formUrlInput">
-            <Form.Label style={{paddingRight: '5px'}}>User</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="user name"
-              value={user}
-              onChange={handleUserChange}
-            />
-          </Form.Group>
-        </Form>
-      }
-      {!editUsername &&
+    // <StickyContainer>
+      <div className="canvas" onMouseMove={handleMouseMove}>
+        <div style={{font: '48px'}}>Convo</div>
         <div>
-          <span>User: {user}</span>
-          <Button style={{border: 'none', backgroundColor: editUserBtnBgColour, borderColor: 'blue'}} className="editUserBtn" onClick={handleEditUserClick}><BiPencil /></Button>
-        </div>
-      }
+          {/* <Sticky> */}
+            {({
+              style,
+            }) => (
+              <div className="topSidebar" style={style}>
+                <div style={{ padding: '5px' }}>
+                  <img src="Robbie.svg"></img>
+                </div>
+                <div style={{ padding: '5px' }}>
+                  <img src="AsianDude.svg"></img>
+                </div>
+              </div>
+            )}
+          {/* </Sticky> */}
+          <div className="topSidebar">
+                <div style={{ padding: '5px' }}>
+                  <img src="Robbie.svg"></img>
+                </div>
+                <div style={{ padding: '5px' }}>
+                  <img src="AsianDude.svg"></img>
+                </div>
+              </div>
+          <span style={{alignItems: 'center', justifySelf: 'center'}}>
+            {<Cursor pos={otherUserPos} />}
+            {
+              // Create comment thread components from an array of comment data.
+              messageThreadData.map((data) => (
+                <CommentThread
+                  messageThreadData={data}
+                  addNewMessage={addNewMessage}
+                ></CommentThread>
+              ))
+            }
 
-      {displayOpenComment && (
-        <Form
-          onSubmit={handleCommentSubmit}
-          style={{
-            left: openCommentLeft,
-            top: openCommentTop,
-            position: 'absolute',
-            outline: 'none',
-          }}
-        >
-          <Form.Group controlId="formComment">
-            <Form.Control
-              type="text"
-              placeholder="Comment..."
-              value={openCommentText}
-              onChange={handleCommentTextChange}
-            />
-          </Form.Group>
+            {editUsername &&
+              <Form onSubmit={handleUserSubmit}>
+                <Form.Group controlId="formUrlInput">
+                  <Form.Label style={{ paddingRight: '5px' }}>User</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="user name"
+                    value={user}
+                    onChange={handleUserChange}
+                  />
+                </Form.Group>
+              </Form>
+            }
+            {!editUsername &&
+              <div>
+                <span>User: {user}</span>
+                <Button style={{ border: 'none', backgroundColor: editUserBtnBgColour, borderColor: 'blue' }} className="editUserBtn" onClick={handleEditUserClick}><BiPencil /></Button>
+              </div>
+            }
 
-          {/* <Button variant="primary" type="submit">
+            {displayOpenComment && (
+              <Form
+                onSubmit={handleCommentSubmit}
+                style={{
+                  left: openCommentLeft,
+                  top: openCommentTop,
+                  position: 'absolute',
+                  outline: 'none',
+                }}
+              >
+                <Form.Group controlId="formComment">
+                  <Form.Control
+                    type="text"
+                    placeholder="Comment..."
+                    value={openCommentText}
+                    onChange={handleCommentTextChange}
+                  />
+                </Form.Group>
+
+                {/* <Button variant="primary" type="submit">
             Submit
           </Button> */}
-        </Form>
-      )}
+              </Form>
+            )}
 
-      {editUrl && <Form onSubmit={handleUrlSubmit}>
-        <Form.Group controlId="formUrlInput">
-          <Form.Label style={{paddingRight: '5px'}}>Media Content URL</Form.Label>
-          <Form.Control
-            type="url"
-            placeholder="URL"
-            value={url}
-            onChange={handleUrlChange}
-          />
-        </Form.Group>
+            {editUrl && <Form onSubmit={handleUrlSubmit}>
+              <Form.Group controlId="formUrlInput">
+                <Form.Label style={{ paddingRight: '5px' }}>Media Content URL</Form.Label>
+                <Form.Control
+                  type="url"
+                  placeholder="URL"
+                  value={url}
+                  onChange={handleUrlChange}
+                />
+              </Form.Group>
 
-        {/* <Button variant="primary" type="submit">
+              {/* <Button variant="primary" type="submit">
           Submit
         </Button> */}
-      </Form>}
-      {!editUrl &&
-        <div>
-          <span>Media Content URL: {url}</span>
-          <Button style={{border: 'none', backgroundColor: editUserBtnBgColour, borderColor: 'blue'}} className="editUserBtn" onClick={handleEditUrlClick}><BiPencil /></Button>
-        </div>
-      }
+            </Form>}
+            {!editUrl &&
+              <div>
+                <span>Media Content URL: {url}</span>
+                <Button style={{ border: 'none', backgroundColor: editUserBtnBgColour, borderColor: 'blue' }} className="editUserBtn" onClick={handleEditUrlClick}><BiPencil /></Button>
+              </div>
+            }
 
-      {contentReady && contentPermalink && (
-        <div>
-          <img src={`${contentPermalink}?${Date.now()}`}></img>
+            {contentReady && contentPermalink && (
+              <div>
+                <img src={`${contentPermalink}?${Date.now()}`}></img>
+              </div>
+            )}
+          </span>
+
         </div>
-      )}
-    </div>
+      </div>
+
+    // </StickyContainer>
+
   )
 }
