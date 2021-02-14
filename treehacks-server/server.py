@@ -100,6 +100,7 @@ def add_msg(msg):
 @socketio.on('move_cursor')
 def move_cursor(msg):
     """ Move cursor page """
+    print("Mouse move", msg)
     user_id = msg['user']
     page_url = user_to_page[user_id]
     mouse_pos[user_id] = (msg["x"], msg["y"])

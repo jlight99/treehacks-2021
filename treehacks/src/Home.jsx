@@ -1,11 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useCallback,
-  useMemo,
-  useRef,
-  setState,
-} from 'react'
+import React, { useEffect, useState } from 'react'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import axios from 'axios'
@@ -16,7 +9,23 @@ import { connect_to_doc, add_msg, move_cursor } from './SocketAPIs'
 import socketIOClient from 'socket.io-client'
 
 let alreadyConnected = false
+// let mouseMoveCounter = 0
 let socket = socketIOClient('ws://localhost:8080')
+
+function Cursor(props) {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        backgroundColor: 'black',
+        left: props.pos[0] + 'px',
+        top: props.pos[1] + 'px',
+      }}
+    >
+      Hi
+    </div>
+  )
+}
 
 export default function Home(props) {
   const pagescreenApiUrl = 'https://api.pagescreen.io/v1/capture.json'
@@ -28,6 +37,7 @@ export default function Home(props) {
   const [openCommentLeft, setOpenCommentLeft] = useState(0)
   const [openCommentText, setOpenCommentText] = useState('')
   const [displayOpenComment, setDisplayOpenComment] = useState(false)
+  const [otherUserPos, setOtherUserPos] = useState([10, 10])
   const [messageThreadData, setMessageThreadData] = useState([
     {
       left: 300,
@@ -198,6 +208,15 @@ export default function Home(props) {
       .catch((err) => console.log(err))
   }
 
+  const handleMouseMove = (e) => {
+    // if (mouseMoveCounter > 5) {
+    console.log(e.clientX, e.clientY)
+    move_cursor(socket, { user: user, x: e.clientX, y: e.clientY })
+    //   mouseMoveCounter = 0
+    // }
+    // mouseMoveCounter++
+  }
+
   const add_msg_cb = (msg) => {
     console.log('Got new message from another user', msg)
     const newMessage = {
@@ -215,9 +234,13 @@ export default function Home(props) {
     addNewMessage(newMessage)
   }
 
+  // We can currently only see one other user cursor
+  // TODO: make compatible for multi-user
   const move_cursor_cb = (pos) => {
-    console.log('pos')
-    console.log(pos)
+    console.log('pos:', pos)
+    setOtherUserPos([pos.x, pos.y]) // TODO: Calling this hook is so flaky!! AND MOST TIMES DOESN'T UPDATE!!
+
+    console.log('updated pos', otherUserPos)
   }
 
   if (!alreadyConnected) {
@@ -227,14 +250,14 @@ export default function Home(props) {
   }
 
   return (
-    <div className="canvas">
-      {/* <Sockets /> */}
+    <div className="canvas" onMouseMove={handleMouseMove}>
       {contentReady && contentPermalink && (
         <div>
           <img src={`${contentPermalink}?${Date.now()}`}></img>
         </div>
       )}
 
+      {<Cursor pos={otherUserPos} />}
       {
         // Create comment thread components from an array of comment data.
         messageThreadData.map((data) => (
