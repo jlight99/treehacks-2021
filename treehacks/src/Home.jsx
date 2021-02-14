@@ -110,11 +110,11 @@ export default function Home(props) {
   }
 
   useEffect(() => {
-    document.addEventListener('click', handleClick)
+    document.addEventListener('dblclick', handleClick);
     return () => {
-      document.removeEventListener('click', handleClick)
+      document.removeEventListener('dblclick', handleClick);
     }
-  })
+  }, []);
 
   /*
    * Upon user mouse click, open a textfield where they can type their comment.
@@ -187,6 +187,7 @@ export default function Home(props) {
       url: pagescreenApiUrl,
       data: {
         url: url,
+        fullpage: true,
       },
       auth: {
         username: 'pk_screenshot_5bb5cd295c45a',
