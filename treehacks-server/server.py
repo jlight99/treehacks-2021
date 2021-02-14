@@ -1,24 +1,63 @@
-# from flask import Flask
-# from flask import request
-import asyncio
-import websockets
+from collections import defaultdict
+from flask import Flask, request
+from flask_socketio import SocketIO, join_room
+from flask_cors import CORS
+import json
+import uuid
 
-# app = Flask(__name__)
+from typing import List, Dict, Set
 
-# @app.route('/')
-# def hello_world():
-#     return 'Hello, World!'
 
-async def hello(websocket, path):
-    # name = await websocket.recv()
-    # print(f"< {name}")
+########################### FLASK and SOCKETIO setup ###########################
+app = Flask('web_server')
+CORS(app)
+cors = CORS(app, resources={
+	r'/*': {
+		'origin': '*'
+	}
+})
 
-    greeting = f"Hello bob!"
+socketio = SocketIO(app, cors_allowed_origins='*')
 
-    await websocket.send(greeting)
-    print(f"> {greeting}")
 
-start_server = websockets.serve(hello, "localhost", 8765)
+############################### Global Variables ############################### 
+# Stores all parties in a dictionary keyed by `party_id`
+users: Dict[str, Set[str]] = defaultdict(set)
 
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
+
+################################ HTML Rendering ################################ 
+# This method is only used to render the test webpage and can be diabled on your 
+# own webserver
+@app.route('/')
+def root_page():
+	return "hi"
+
+
+############################### Utility Functions ############################## 
+
+
+############################ SocketIO Event Handlers ###########################
+
+# Always called when frontends or hosts initially connect
+@socketio.on('connect')
+def connected():
+    print(f'client with sid {request.sid} connected')
+
+# Registers client to doc
+@socketio.on('connect_to_doc')
+def handle_host_connect(msg):
+    user_id = request.sid
+    doc_url = msg
+    users[doc_url].add(user_id)
+	
+	# Send party ID back to the host
+    socketio.emit('connect_to_doc', f"connected to doc {doc_url}!", room = user_id)
+
+############################## Starting The Server #############################
+
+if __name__=='__main__':
+	try:
+		print('Server started')
+		socketio.run(app, host='localhost', port=8080)
+	except:
+		pass

@@ -1,41 +1,24 @@
-import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useRef, setState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import Comment from './Comment';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import Sockets from './Sockets'
 
 export default function Home(props) {
     const pagescreenApiUrl = 'https://api.pagescreen.io/v1/capture.json';
     const [url, setUrl] = useState('');
     const [contentPermalink, setContentPermalink] = useState('');
     const [contentReady, setContentReady] = useState(false);
-    const [socketUrl, setSocketUrl] = useState('ws://localhost/:8765');
-    const messageHistory = useRef([]);
-    
-    const {
-      sendMessage,
-      lastMessage,
-      readyState,
-    } = useWebSocket(socketUrl);
+    const [openCommentTop, setOpenCommentTop] = useState(0);
+    const [openCommentLeft, setOpenCommentLeft] = useState(0);
+    const [openCommentText, setOpenCommentText] = useState('');
+    const [displayOpenComment, setDisplayOpenComment] = useState(false);
 
-    messageHistory.current = useMemo(() =>
-      messageHistory.current.concat(lastMessage),[lastMessage]);
-  
-    const handleClickChangeSocketUrl = useCallback(() =>
-      setSocketUrl('ws://localhost/:8765'), []);
-  
-    const handleClickSendMessage = useCallback(() =>
-      sendMessage('Hello'), []);
-  
-    const connectionStatus = {
-      [ReadyState.CONNECTING]: 'Connecting',
-      [ReadyState.OPEN]: 'Open',
-      [ReadyState.CLOSING]: 'Closing',
-      [ReadyState.CLOSED]: 'Closed',
-      [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
-    }[readyState];
-
+    /*
+     * Dummy comment data, to be replaced once our pipeline is working, and we can request
+     * real comment data from the server.
+     */
     const commentData = [
         {
             "id": 1,
@@ -57,6 +40,9 @@ export default function Home(props) {
         },
     ];
 
+    /*
+     * Create comment components from an array of comment data.
+     */
     const commentItems = commentData.map((data) =>
         <Comment
             key={data.id}
@@ -67,26 +53,54 @@ export default function Home(props) {
         ></Comment>
     );
 
-    const handleClick = e => {
-        console.log("clicked");
-        console.log(e);
-    };
-
     useEffect(() => {
         document.addEventListener("click", handleClick);
-    
+
         return () => {
-          document.removeEventListener("click", handleClick);
+            document.removeEventListener("click", handleClick);
         };
     });
 
+    /*
+     * Upon user mouse click, open a textfield where they can type their comment.
+     */
+    const handleClick = e => {
+        if (!displayOpenComment) {
+            setOpenCommentLeft(e.x);
+            setOpenCommentTop(e.y);
+            setDisplayOpenComment(true);
+        }
+    };
+
+    /*
+     * Update the comment text as the user types to display their changes in real time.
+     */
+    const handleCommentTextChange = event => {
+        setOpenCommentText(event.target.value);
+    };
+
+    /*
+     * Send the comment data to the server in order to create a new comment.
+     */
+    const handleCommentSubmit = event => {
+        // TODO send comment to backend
+        event.preventDefault();
+        console.log("sending comment to backend");
+    };
+
+    /*
+     * Update the input URL as the user types to display their changes in real time.
+     */
     const handleUrlChange = event => {
         setUrl(event.target.value);
     };
 
-    const handleSubmit = event => {
+    /*
+     * Accept an URL as input from the user, capture a screenshot of that URL using the PageScreen API,
+     * and display the screenshot on our webpage.
+     */
+    const handleUrlSubmit = event => {
         event.preventDefault();
-        console.log('sending axios request');
         axios({
             method: 'post',
             url: pagescreenApiUrl,
@@ -98,52 +112,52 @@ export default function Home(props) {
                 password: 'sk_screenshot_0f0550e020db6',
             },
         })
-        .then(data => {
-            console.log(data);
-            if (data.data.data[0]) {
-                setContentPermalink(data.data.data[0].permalink);
-            } else {
-                setContentPermalink(data.data.data.permalink);
-            }
+            .then(data => {
+                console.log(data);
+                if (data.data.data[0]) {
+                    setContentPermalink(data.data.data[0].permalink);
+                } else {
+                    setContentPermalink(data.data.data.permalink);
+                }
 
-            var millisecondsToWait = 2000;
-            setTimeout(function() {
-                setContentReady(true);
-            }, millisecondsToWait);
-        })
-        .catch(err => console.log(err));
+                var millisecondsToWait = 2000;
+                setTimeout(function () {
+                    setContentReady(true);
+                }, millisecondsToWait);
+            })
+            .catch(err => console.log(err));
     };
 
     return (
         <div style={{ margin: '3%' }}>
-            <div>
-                <button
-                    onClick={handleClickChangeSocketUrl}
-                >
-                    Click Me to change Socket Url
-                </button>
-                <button
-                    onClick={handleClickSendMessage}
-                    disabled={readyState !== ReadyState.OPEN}
-                >
-                    Click Me to send 'Hello'
-                </button>
-                <span>The WebSocket is currently {connectionStatus}</span>
-                {lastMessage ? <span>Last message: {lastMessage}</span> : null}
-            </div>
+            <Sockets/>
             <h3>Social Media Paradigm Shift</h3>
             <div>content discussion-based social media</div>
 
-            {contentReady && contentPermalink &&  
+            {contentReady && contentPermalink &&
                 <div>
                     <img src={`${contentPermalink}?${Date.now()}`}></img>
                 </div>
             }
 
             {commentItems}
+            {displayOpenComment && <Form onSubmit={handleCommentSubmit} style={{left: openCommentLeft, top: openCommentTop, position: 'absolute', outline: 'none'}}>
+                <Form.Group controlId='formComment'>
+                    <Form.Control
+                        type='text'
+                        placeholder='Comment...'
+                        value={openCommentText}
+                        onChange={handleCommentTextChange}
+                    />
+                </Form.Group>
 
-            <Form onSubmit={handleSubmit}>
-                <Form.Group controlId='formBasicEmail'>
+                <Button variant='primary' type='submit'>
+                    Submit
+                </Button>
+            </Form>}
+
+            <Form onSubmit={handleUrlSubmit}>
+                <Form.Group controlId='formUrlInput'>
                     <Form.Label>Media Content URL</Form.Label>
                     <Form.Control
                         type='url'
