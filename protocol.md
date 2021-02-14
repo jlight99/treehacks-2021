@@ -16,10 +16,8 @@
 
 ```
 {
-  position: {
-    x: ,
-    y: ,
-  },
+  x: ,
+  y: ,
   message_thread_id: '',
   [                     // List of messages on this thread
     {
